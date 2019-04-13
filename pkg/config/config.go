@@ -17,6 +17,7 @@ type GitlabInstance struct {
 	URL         string `json:"url"`
 	Username    string `json:"username"`
 	AccessToken string `json:"access-token"`
+	Project     string `json:"project"`
 }
 
 // Default will generate the default configuration.
@@ -26,6 +27,7 @@ func Default() Configuration {
 			URL:         "gitlab.somedomain.com",
 			Username:    "coder1",
 			AccessToken: "12345",
+			Project:     "collection/project",
 		},
 	}
 }

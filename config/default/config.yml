@@ -1,4 +1,5 @@
 instance:
-  url: gitlab.somedomain.com
+  url: https://gitlab.somedomain.com/api/v4
   username: coder1
   accesstoken: "12345"
+  project: group/project
