@@ -62,7 +62,7 @@ func (g *GitlabAPI) GetIssues() ([]*gitlab.Issue, error) {
 	return retIssues, err
 }
 
-func (g *GitlabAPI) GetIssueNote(issueID int) ([]*gitlab.Note, error) {
+func (g *GitlabAPI) GetIssueNotes(issueID int) ([]*gitlab.Note, error) {
 	var err error
 
 	// g.client.Notes.ListIssueNotes

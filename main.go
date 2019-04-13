@@ -18,19 +18,18 @@ func main() {
 	gapi, err := api.Connect(appConfig.Instance.Project, appConfig.Instance.AccessToken, appConfig.Instance.URL)
 	handleErr(err)
 
-	users, err := gapi.GetUsers()
-	handleErr(err)
-	for _, user := range users {
-		fmt.Println(user.Name)
-	}
+	// users, err := gapi.GetUsers()
+	// handleErr(err)
+	// for _, user := range users {
+	// 	fmt.Println(user.Name)
+	// }
 
 	// issueID := 0
 	issues, err := gapi.GetIssues()
 	for _, issue := range issues {
 		fmt.Println(issue.WebURL)
-		// issueID = issue.IID
 	}
-	notes, err := gapi.GetIssueNote(133)
+	notes, err := gapi.GetIssueNotes(133)
 	handleErr(err)
 	for _, note := range notes {
 		fmt.Println(note.NoteableType)
