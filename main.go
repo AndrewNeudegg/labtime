@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"labtime/pkg/api"
 	"labtime/pkg/config"
+	"log"
 )
 
 // main is the entry point of the application.
@@ -23,15 +24,23 @@ func main() {
 		fmt.Println(user.Name)
 	}
 
+	// issueID := 0
 	issues, err := gapi.GetIssues()
 	for _, issue := range issues {
-		fmt.Println(issue.IID)
+		fmt.Println(issue.WebURL)
+		// issueID = issue.IID
+	}
+	notes, err := gapi.GetIssueNote(133)
+	handleErr(err)
+	for _, note := range notes {
+		fmt.Println(note.NoteableType)
+		fmt.Println(note.String())
 	}
 }
 
 // handleErr eases the use of errors.
 func handleErr(err error) {
 	if err != nil {
-		panic(err)
+		log.Fatalf(err.Error())
 	}
 }

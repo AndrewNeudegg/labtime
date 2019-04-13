@@ -29,7 +29,6 @@ func (g *GitlabAPI) GetUsers() ([]*gitlab.User, error) {
 	if g.client == nil {
 		return nil, fmt.Errorf("client has not been instantiated")
 	}
-
 	users, _, err := g.client.Users.ListUsers(nil)
 	return users, err
 }
@@ -61,4 +60,35 @@ func (g *GitlabAPI) GetIssues() ([]*gitlab.Issue, error) {
 	}
 
 	return retIssues, err
+}
+
+func (g *GitlabAPI) GetIssueNote(issueID int) ([]*gitlab.Note, error) {
+	var err error
+
+	// g.client.Notes.ListIssueNotes
+
+	opt := &gitlab.ListIssueNotesOptions{
+		ListOptions: gitlab.ListOptions{
+			PerPage: 10,
+			Page:    1,
+		},
+	}
+
+	retIssueNotes := []*gitlab.Note{}
+
+	for {
+		notes, resp, err := g.client.Notes.ListIssueNotes(g.project, issueID, opt)
+		if err != nil {
+			break
+		}
+		retIssueNotes = append(retIssueNotes, notes...)
+		// Exit the loop when we've seen all pages.
+		if resp.CurrentPage >= resp.TotalPages {
+			break
+		}
+		// Update the page number to get the next page.
+		opt.Page = resp.NextPage
+	}
+
+	return retIssueNotes, err
 }
