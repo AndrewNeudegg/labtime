@@ -1,6 +1,6 @@
 ## VSCode
 # https://github.com/github/gitignore/blob/master/Global/VisualStudioCode.gitignore
-.vscode/*
+.vscode
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -21,4 +21,7 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-vendor/*
+vendor
+
+## Sensitive files
+config/custom
