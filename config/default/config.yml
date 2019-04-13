@@ -1,0 +1,4 @@
+instance:
+  url: gitlab.somedomain.com
+  username: coder1
+  accesstoken: "12345"
