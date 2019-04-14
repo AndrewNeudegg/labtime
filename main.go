@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"labtime/pkg/api"
 	"labtime/pkg/config"
+	"labtime/pkg/templator"
 	"log"
+
+	"github.com/flosch/pongo2"
 )
 
 // main is the entry point of the application.
@@ -54,6 +57,13 @@ func main() {
 		totalTime += timeSpent.Spent.TotalDaysRounded()
 	}
 	fmt.Printf("Total time spent: %v days \n", totalTime)
+
+
+	ud := make(map[string]interface{})
+	issues, err := gapi.GetIssues()
+	ud["issues"] = issues
+
+	templator.RenderTemplate("./templates/IssueOverview.csv.j2", templator.CreateContext(ud))
 }
 
 // handleErr eases the use of errors.
