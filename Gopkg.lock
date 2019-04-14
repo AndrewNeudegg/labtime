@@ -2,6 +2,14 @@
 
 
 [[projects]]
+  digest = "1:434aab943cc1c082c9df36bd4b1f107d9ef4af930d2ce13d3f2eb008df9196f0"
+  name = "github.com/flosch/pongo2"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "5e81b817a0c48c1c57cdf1a9056cf76bdee02ca9"
+  version = "v3.0"
+
+[[projects]]
   digest = "1:318f1c959a8a740366fce4b1e1eb2fd914036b4af58fbd0a003349b305f118ad"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
@@ -16,6 +24,22 @@
   pruneopts = "UT"
   revision = "44c6ddd0a2342c386950e880b658017258da92fc"
   version = "v1.0.0"
+
+[[projects]]
+  digest = "1:31e761d97c76151dde79e9d28964a812c46efc5baee4085b86f68f0c654450de"
+  name = "github.com/konsorten/go-windows-terminal-sequences"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "f55edac94c9bbba5d6182a4be46d86a2c9b5b50e"
+  version = "v1.0.2"
+
+[[projects]]
+  digest = "1:fd61cf4ae1953d55df708acb6b91492d538f49c305b364a014049914495db426"
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "8bdbc7bcc01dcbb8ec23dc8a28e332258d25251f"
+  version = "v1.4.1"
 
 [[projects]]
   digest = "1:e362dddd08e6e894835074b6de49515939dbfb590c7198980639291bab62db4f"
@@ -48,6 +72,14 @@
   revision = "9f3314589c9a9136388751d9adae6b0ed400978a"
 
 [[projects]]
+  branch = "master"
+  digest = "1:3e01c69b34e7c3fa4b7a118ca95a6beaecea00f7f4fb701545d83eacd3badb3c"
+  name = "golang.org/x/sys"
+  packages = ["unix"]
+  pruneopts = "UT"
+  revision = "97732733099d6a942a73b889770774366de963ed"
+
+[[projects]]
   digest = "1:6eb6e3b6d9fffb62958cf7f7d88dbbe1dd6839436b0802e194c590667a40412a"
   name = "google.golang.org/appengine"
   packages = [
@@ -75,6 +107,8 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/flosch/pongo2",
+    "github.com/sirupsen/logrus",
     "github.com/xanzy/go-gitlab",
     "gopkg.in/yaml.v2",
   ]
