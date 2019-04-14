@@ -38,7 +38,7 @@ func (c *Context) ConcatIssueLabels(issue *gitlab.Issue, seperator string) strin
 	return strings.Join(issue.Labels, seperator)
 }
 
-func (c *Context) TotalTimeSpent(issue *gitlab.Issue) float64 {
+func (c *Context) TotalIssueTimeSpent(issue *gitlab.Issue) float64 {
 	log.Info(fmt.Sprintf(`Calculating total time spent on issue %v.`, issue.IID))
 	overview, err := c.API.GetTimeIssue(issue.IID, c.AppConfig.QueryConfig.TimeEntryDetectionRegex, c.AppConfig.QueryConfig.TimeEntryExtractionRegex)
 	handleErr(err)

@@ -64,52 +64,7 @@ const (
 	gitlabHoursInDay      = 8
 	gitlabMinutesInHour   = 60
 	gitlabSecondsInMinute = 60
-
-	gitlab_Second = 1
-	gitlab_Minute = gitlab_Second * gitlabSecondsInMinute
-	gitlab_Hour   = gitlab_Minute * gitlabMinutesInHour
-	gitlab_Day    = gitlab_Hour * gitlabHoursInDay
-	gitlab_Week   = gitlab_Day * gitlabDaysInWeek
-	gitlab_Month  = gitlab_Week * gitlabWeeksInMonth
 )
-
-// GetTimeIssue extracts the times from a specific issue.
-func (g *GitlabAPI) GetTimeIssue(issueID int, timeEntryRegex string, timeMatchRegex string) (*Overview, error) {
-	notes, err := g.GetIssueNotes(issueID)
-	if err != nil {
-		return nil, err
-	}
-	timeNotes, err := extractTimeNotes(notes, timeEntryRegex)
-	if err != nil {
-		return nil, err
-	}
-
-	timeEntries := []TimeSpentEntry{}
-	for _, timeNote := range timeNotes {
-
-		time, err := extractTime(timeNote.Body, timeMatchRegex)
-		if err != nil {
-			return nil, err
-		}
-
-		timeEntries = append(timeEntries, TimeSpentEntry{
-			ID: timeNote.ID,
-			Author: &gitlab.Author{
-				ID:       timeNote.Author.ID,
-				Username: timeNote.Author.Username,
-				Email:    timeNote.Author.Email,
-				Name:     timeNote.Author.Name,
-			},
-			CreatedAt: timeNote.CreatedAt,
-			RawBody:   timeNote.Body,
-			Spent:     time,
-		})
-	}
-	return &Overview{
-		ID:         issueID,
-		TimeSpents: timeEntries,
-	}, nil
-}
 
 func extractTime(bodyContent string, timeGroupMatcher string) (*GitlabTime, error) {
 	returnTime := GitlabTime{}
@@ -151,10 +106,6 @@ func extractTime(bodyContent string, timeGroupMatcher string) (*GitlabTime, erro
 		}
 	}
 	return &returnTime, nil
-}
-
-func (g *GitlabAPI) GetTimeMR(mergeRequestID int) (*Overview, error) {
-	return nil, nil
 }
 
 func extractTimeNotes(notes []*gitlab.Note, timeEntryRegex string) ([]*gitlab.Note, error) {

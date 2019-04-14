@@ -1,0 +1,2 @@
+{% for mr in ctx.ListProjectMRs() %}{{ mr.IID }},{{ ctx.TotalMRTimeSpent(mr) }}
+{% endfor %}

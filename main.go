@@ -25,9 +25,10 @@ func main() {
 	handleErr(ctx.Connect())
 	ud["ctx"] = ctx
 
-	output, err := templator.RenderTemplate("./templates/IssueOverview.csv.j2", templator.CreateContext(ud))
+	// output, err := templator.RenderTemplate("./templates/IssueOverview.csv.j2", templator.CreateContext(ud))
+	output, err := templator.RenderTemplate("./templates/MROverview.csv.j2", templator.CreateContext(ud))
 	handleErr(err)
-	err = ioutil.WriteFile("./output/IssueOverview.csv", []byte(output), 0644)
+	err = ioutil.WriteFile("./output/MROverview.csv", []byte(output), 0644)
 	handleErr(err)
 }
 
