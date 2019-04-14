@@ -9,7 +9,8 @@ import (
 
 // Configuration stores the configuration for this app.
 type Configuration struct {
-	Instance GitlabInstance `json:"gitlab-instance"`
+	Instance    GitlabInstance     `json:"gitlab-instance"`
+	QueryConfig QueryConfiguration `json:"query-configuration"`
 }
 
 // GitlabInstance is the instance of Gitlab that will be accessed.
@@ -20,6 +21,12 @@ type GitlabInstance struct {
 	Project     string `json:"project"`
 }
 
+// QueryConfiguration allows the gitlab note queries to be configured.
+type QueryConfiguration struct {
+	TimeEntryDetectionRegex  string `json:"time-detection-regex"`
+	TimeEntryExtractionRegex string `json:"time-extraction-regex"`
+}
+
 // Default will generate the default configuration.
 func Default() Configuration {
 	return Configuration{
@@ -28,6 +35,10 @@ func Default() Configuration {
 			Username:    "coder1",
 			AccessToken: "12345",
 			Project:     "collection/project",
+		},
+		QueryConfig: QueryConfiguration{
+			TimeEntryDetectionRegex: `/time spent/g`,
+			TimeEntryExtractionRegex: `(?P<month>[0-9]+)(mo)|(?P<week>[0-9]+)(w)|(?P<day>[0-9]+)(d)|(?P<hour>[0-9]+)(h)|(?P<minute>[0-9]+)(m)|(?P<second>[0-9]+)(s)`,
 		},
 	}
 }

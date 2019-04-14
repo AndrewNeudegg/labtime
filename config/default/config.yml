@@ -1,5 +1,8 @@
 instance:
-  url: https://gitlab.somedomain.com/api/v4
+  url: gitlab.somedomain.com
   username: coder1
   accesstoken: "12345"
-  project: group/project
+  project: collection/project
+queryconfig:
+  timeentrydetectionregex: /time spent/g
+  timeentryextractionregex: (?P<month>[0-9]+)(mo)|(?P<week>[0-9]+)(w)|(?P<day>[0-9]+)(d)|(?P<hour>[0-9]+)(h)|(?P<minute>[0-9]+)(m)|(?P<second>[0-9]+)(s)
