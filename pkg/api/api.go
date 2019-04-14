@@ -62,6 +62,11 @@ func (g *GitlabAPI) GetIssues() ([]*gitlab.Issue, error) {
 	return retIssues, err
 }
 
+func (g *GitlabAPI) GetIssue(issueID int) (*gitlab.Issue, error) {
+	issue, _, err := g.client.Issues.GetIssue(g.project, issueID)
+	return issue, err
+}
+
 func (g *GitlabAPI) GetIssueNotes(issueID int) ([]*gitlab.Note, error) {
 	var err error
 

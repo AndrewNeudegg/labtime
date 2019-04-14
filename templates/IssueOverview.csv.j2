@@ -1,0 +1,2 @@
+{% for issue in ctx.ListProjectIssues() %}{{ issue.IID }},{{ ctx.TotalTimeSpent(issue) }}
+{% endfor %}

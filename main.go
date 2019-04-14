@@ -1,69 +1,34 @@
 package main
 
 import (
-	"fmt"
-	"labtime/pkg/api"
+	"io/ioutil"
 	"labtime/pkg/config"
+	"labtime/pkg/context"
 	"labtime/pkg/templator"
-	"log"
+	"os"
 
-	"github.com/flosch/pongo2"
+	log "github.com/sirupsen/logrus"
 )
 
 // main is the entry point of the application.
 func main() {
+	log.Info("Starting application...")
+
 	err := generateDefualtConfig()
 	handleErr(err)
 
 	appConfig, err := config.Load("./config/custom/config.yml")
 	handleErr(err)
 
-	// fmt.Println("Hello World!")
-	// fmt.Println(appConfig)
-
-	gapi, err := api.Connect(appConfig.Instance.Project, appConfig.Instance.AccessToken, appConfig.Instance.URL)
-	handleErr(err)
-
-	// users, err := gapi.GetUsers()
-	// handleErr(err)
-	// for _, user := range users {
-	// 	fmt.Println(user.Name)
-	// }
-
-	// issueID := 0
-	// issues, err := gapi.GetIssues()
-	// for _, issue := range issues {
-	// 	fmt.Println(issue.WebURL)
-	// }
-	// notes, err := gapi.GetIssueNotes(133)
-	// handleErr(err)
-	// for _, note := range notes {
-	// 	fmt.Println(note.NoteableType)
-	// 	fmt.Println(note.String())
-	// }
-
-	overview, err := gapi.GetTimeIssue(
-		133, appConfig.QueryConfig.TimeEntryDetectionRegex, appConfig.QueryConfig.TimeEntryExtractionRegex)
-	handleErr(err)
-	totalTime := float64(0)
-	for _, timeSpent := range overview.TimeSpents {
-		fmt.Printf("%s: %v days (raw: %v) @ %v - %v :: %v \n",
-			timeSpent.Author.Name,
-			timeSpent.Spent.TotalDaysRounded(),
-			timeSpent.Spent.TotalDaysRaw(),
-			timeSpent.CreatedAt.Format("02/01/06"),
-			timeSpent.RawBody,
-			timeSpent.Spent)
-		totalTime += timeSpent.Spent.TotalDaysRounded()
-	}
-	fmt.Printf("Total time spent: %v days \n", totalTime)
-
-
 	ud := make(map[string]interface{})
-	issues, err := gapi.GetIssues()
-	ud["issues"] = issues
+	ctx := context.CreateContext(appConfig)
+	handleErr(ctx.Connect())
+	ud["ctx"] = ctx
 
-	templator.RenderTemplate("./templates/IssueOverview.csv.j2", templator.CreateContext(ud))
+	output, err := templator.RenderTemplate("./templates/IssueOverview.csv.j2", templator.CreateContext(ud))
+	handleErr(err)
+	err = ioutil.WriteFile("./output/IssueOverview.csv", []byte(output), 0644)
+	handleErr(err)
 }
 
 // handleErr eases the use of errors.
@@ -74,6 +39,21 @@ func handleErr(err error) {
 }
 
 func generateDefualtConfig() error {
+	log.Info("Generating the default configuration.")
 	appConfig := config.Default()
+	defer log.Info("Generated the default configuration to: ./config/default/config.yml")
 	return appConfig.Save("./config/default/config.yml")
+}
+
+// init: configuration
+func init() {
+	// Log as JSON instead of the default ASCII formatter.
+	// log.SetFormatter(&log.JSONFormatter{})
+
+	// Output to stdout instead of the default stderr
+	// Can be any io.Writer, see below for File example
+	log.SetOutput(os.Stdout)
+
+	// Only log the warning severity or above.
+	log.SetLevel(log.InfoLevel)
 }

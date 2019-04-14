@@ -25,3 +25,4 @@ vendor
 
 ## Sensitive files
 config/custom
+output

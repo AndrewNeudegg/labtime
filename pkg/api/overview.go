@@ -11,6 +11,7 @@ import (
 
 type Overview struct {
 	ID         int              `json:"id"`
+	Type       string           `json:"type"`
 	TimeSpents []TimeSpentEntry `json:"time-spents"`
 }
 
@@ -56,7 +57,7 @@ func round(input float64, unit float64) float64 {
 }
 
 const (
-	threeDecimalPlaces = 1000
+	threeDecimalPlaces = 10
 
 	gitlabWeeksInMonth    = 4
 	gitlabDaysInWeek      = 5
