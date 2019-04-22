@@ -1,0 +1,24 @@
+# TODO: Find a better way to store JSON Values in a Yaml file.
+hostname: localhost
+port: 44601
+routes:
+  /:
+    content: "{\n\t\t\t\t\"squadName\": \"Super hero squad\",\n\t\t\t\t\"homeTown\":
+      \"Metro City\",\n\t\t\t\t\"formed\": 2016,\n\t\t\t\t\"secretBase\": \"Super
+      tower\",\n\t\t\t\t\"active\": true,\n\t\t\t\t\"members\": [\n\t\t\t\t  {\n\t\t\t\t\t\"name\":
+      \"Molecule Man\",\n\t\t\t\t\t\"age\": 29,\n\t\t\t\t\t\"secretIdentity\": \"Dan
+      Jukes\",\n\t\t\t\t\t\"powers\": [\n\t\t\t\t\t  \"Radiation resistance\",\n\t\t\t\t\t
+      \ \"Turning tiny\",\n\t\t\t\t\t  \"Radiation blast\"\n\t\t\t\t\t]\n\t\t\t\t
+      \ },\n\t\t\t\t  {\n\t\t\t\t\t\"name\": \"Madame Uppercut\",\n\t\t\t\t\t\"age\":
+      39,\n\t\t\t\t\t\"secretIdentity\": \"Jane Wilson\",\n\t\t\t\t\t\"powers\": [\n\t\t\t\t\t
+      \ \"Million tonne punch\",\n\t\t\t\t\t  \"Damage resistance\",\n\t\t\t\t\t  \"Superhuman
+      reflexes\"\n\t\t\t\t\t]\n\t\t\t\t  },\n\t\t\t\t  {\n\t\t\t\t\t\"name\": \"Eternal
+      Flame\",\n\t\t\t\t\t\"age\": 1000000,\n\t\t\t\t\t\"secretIdentity\": \"Unknown\",\n\t\t\t\t\t\"powers\":
+      [\n\t\t\t\t\t  \"Immortality\",\n\t\t\t\t\t  \"Heat Immunity\",\n\t\t\t\t\t
+      \ \"Inferno\",\n\t\t\t\t\t  \"Teleportation\",\n\t\t\t\t\t  \"Interdimensional
+      travel\"\n\t\t\t\t\t]\n\t\t\t\t  }\n\t\t\t\t]\n\t\t\t  }"
+  /help:
+    content: "{\"menu\": {\n\t\t\t\t\"id\": \"file\",\n\t\t\t\t\"value\": \"File\",\n\t\t\t\t\"popup\":
+      {\n\t\t\t\t  \"menuitem\": [\n\t\t\t\t\t{\"value\": \"New\", \"onclick\": \"CreateNewDoc()\"},\n\t\t\t\t\t{\"value\":
+      \"Open\", \"onclick\": \"OpenDoc()\"},\n\t\t\t\t\t{\"value\": \"Close\", \"onclick\":
+      \"CloseDoc()\"}\n\t\t\t\t  ]\n\t\t\t\t}\n\t\t\t  }}"

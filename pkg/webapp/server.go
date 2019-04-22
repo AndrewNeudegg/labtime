@@ -1,4 +1,4 @@
-package server2
+package webapp
 
 import (
 	"fmt"
@@ -13,6 +13,7 @@ type WebApp struct {
 	Hostname string           `json:"hostname,omitempty"` // Hostname specifies the host that the demo server will be served on.
 	Port     int              `json:"port,omitempty"`     // Port specifies the TCP port that the server will open on.
 	Routes   map[string]Route `json:"routes,omitempty"`   // Routes specifies the different URL offerings for this demo web app.
+	// server   *http.Server     // server is where the http server is stored while in use.
 }
 
 // Route specifies a URL Path and content that this web application will expose.
@@ -27,6 +28,9 @@ func (we *WebApp) routeHandler(wr http.ResponseWriter, re *http.Request) {
 
 // Launch will start a web app.
 func (we *WebApp) Launch() error {
+	// if we.server != nil {
+	// 	return fmt.Errorf()
+	// }
 	http.HandleFunc("/", we.routeHandler)
 	return http.ListenAndServe(fmt.Sprintf("%s:%v", we.Hostname, we.Port), nil)
 }

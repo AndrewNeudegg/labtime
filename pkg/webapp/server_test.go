@@ -1,4 +1,4 @@
-package server2
+package webapp
 
 import (
 	"fmt"
@@ -11,9 +11,7 @@ import (
 	"gotest.tools/assert"
 )
 
-// TODO: Add interactive test so that developers can see what is actually being returned.
-// TODO: Add test that will examine the saving and loading of the web app routes.
-
+// Test_ServerBasic will test the servers start up and immediate response to http requests.
 func Test_ServerBasic(t *testing.T) {
 	webApp := WebApp{
 		Hostname: "localhost",
