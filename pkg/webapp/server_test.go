@@ -139,6 +139,47 @@ func Test_SaveNLoadServer(t *testing.T) {
 	}
 }
 
+func Test_StartStop(t *testing.T) {
+	webApp := WebApp{
+		Hostname: "localhost",
+		Port:     getFreePort(t),
+		Routes: map[string]Route{
+			"/":     Route{Content: "Hello Home"},
+			"/help": Route{Content: "Hello Help"},
+		},
+	}
+
+	go func() {
+		if err := webApp.Launch(); err != http.ErrServerClosed {
+			t.Fatalf(err.Error())
+		}
+	}()
+
+	for path, route := range webApp.Routes {
+		fmt.Printf("Testing route: %s\n", path)
+		resp, err := http.Get(fmt.Sprintf("http://%s:%v%s", webApp.Hostname, webApp.Port, path))
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+		fmt.Printf("Testing that %s == %s\n", string(body), route.Content)
+		assert.Assert(t, string(body) == route.Content)
+	}
+
+	if err := webApp.Terminate(); err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	_, err := http.Get(fmt.Sprintf("http://%s:%v%s", webApp.Hostname, webApp.Port, "/"))
+	if err == nil {
+		t.Fatalf("should have raised a dial error as the server has been terminated")
+	}
+}
+
 // getFreePort is a helper method for writing tests that may block on a specific port.
 func getFreePort(t *testing.T) int {
 	port, err := freeport.GetFreePort()
