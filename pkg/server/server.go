@@ -26,14 +26,14 @@ func (we *WebApp) routeHandler(wr http.ResponseWriter, re *http.Request) {
 }
 
 // Launch will start a web app.
-func (w *WebApp) Launch() error {
-	http.HandleFunc("/", w.routeHandler)
-	return http.ListenAndServe(fmt.Sprintf("%s:%v", w.Hostname, w.Port), nil)
+func (we *WebApp) Launch() error {
+	http.HandleFunc("/", we.routeHandler)
+	return http.ListenAndServe(fmt.Sprintf("%s:%v", we.Hostname, we.Port), nil)
 }
 
 // Save will write the struct to yaml and is a contained convenience method.
-func (w *WebApp) Save(path string) error {
-	y, err := yaml.Marshal(w)
+func (we *WebApp) Save(path string) error {
+	y, err := yaml.Marshal(we)
 	if err != nil {
 		return err
 	}
@@ -41,10 +41,10 @@ func (w *WebApp) Save(path string) error {
 }
 
 // Load is a contained convenience method
-func (w *WebApp) Load(path string) error {
+func (we *WebApp) Load(path string) error {
 	fileAsBytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		return err
 	}
-	return yaml.Unmarshal(fileAsBytes, &w)
+	return yaml.Unmarshal(fileAsBytes, &we)
 }
