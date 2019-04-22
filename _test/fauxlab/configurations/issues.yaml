@@ -1,0 +1,9 @@
+hostname: localhost
+port: 37577
+routes:
+  /:
+    content:
+      hello: world
+  /help:
+    content:
+      hello: help

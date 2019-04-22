@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/phayes/freeport"
 	"gotest.tools/assert"
@@ -13,6 +14,7 @@ import (
 
 // Test_ServerBasic will test the servers start up and immediate response to http requests.
 func Test_ServerBasic(t *testing.T) {
+	setUp(t)
 	webApp := WebApp{
 		Hostname: "localhost",
 		Port:     getFreePort(t),
@@ -27,6 +29,7 @@ func Test_ServerBasic(t *testing.T) {
 			t.Fatalf(err.Error())
 		}
 	}()
+	time.Sleep(0)
 
 	for path, route := range webApp.Routes {
 		fmt.Printf("Testing route: %s\n", path)
@@ -46,11 +49,13 @@ func Test_ServerBasic(t *testing.T) {
 		}
 		assert.Assert(t, string(body) == string(jsonBytes))
 	}
+	tearDown(t)
 }
 
 // Test_SaveNLoadServer will; create webApp, save it to file, load it to a new instance and then attempt to connect.
 // upon connecting the values will be checked against the original (pre-save) values.
 func Test_SaveNLoadServer(t *testing.T) {
+	setUp(t)
 	// Get a temporary file.
 	file := getTempFile(t)
 	defer os.Remove(file.Name())
@@ -75,6 +80,8 @@ func Test_SaveNLoadServer(t *testing.T) {
 			t.Fatalf(err.Error())
 		}
 	}()
+	time.Sleep(0)
+
 	// Check the new webApp2 against the values stored in webApp1.
 	for path, route := range webApp1.Routes {
 		fmt.Printf("Testing route: %s\n", path)
@@ -94,9 +101,11 @@ func Test_SaveNLoadServer(t *testing.T) {
 		}
 		assert.Assert(t, string(body) == string(jsonBytes))
 	}
+	tearDown(t)
 }
 
 func Test_StartStop(t *testing.T) {
+	setUp(t)
 	webApp := WebApp{
 		Hostname: "localhost",
 		Port:     getFreePort(t),
@@ -111,6 +120,7 @@ func Test_StartStop(t *testing.T) {
 			t.Fatalf(err.Error())
 		}
 	}()
+	time.Sleep(0)
 
 	for path, route := range webApp.Routes {
 		fmt.Printf("Testing route: %s\n", path)
@@ -139,10 +149,11 @@ func Test_StartStop(t *testing.T) {
 	if err == nil {
 		t.Fatalf("should have raised a dial error as the server has been terminated")
 	}
-
+	tearDown(t)
 }
 
 func Test_DynamicContentBasic(t *testing.T) {
+	setUp(t)
 	// Create some content that we will serialise.
 	content := make(DynamicContent)
 	content["hello"] = "world"
@@ -160,9 +171,11 @@ func Test_DynamicContentBasic(t *testing.T) {
 	}
 
 	assert.DeepEqual(t, content, dupeContent)
+	tearDown(t)
 }
 
 func Test_DynamicContentComplex(t *testing.T) {
+	setUp(t)
 	content := make(DynamicContent)
 	err := content.fromJSON([]byte(`
 	{
@@ -204,6 +217,7 @@ func Test_DynamicContentComplex(t *testing.T) {
 	}
 
 	assert.DeepEqual(t, content, dupeContent)
+	tearDown(t)
 }
 
 // getFreePort is a helper method for writing tests that may block on a specific port.
@@ -226,7 +240,7 @@ func getTempFile(t *testing.T) *os.File {
 
 // generateDynamicContent will generate simple to use example content.
 func generateDynamicContent(input string) *DynamicContent {
-	dc := DynamicContent{}
+	dc := make(DynamicContent)
 	dc.fromJSON([]byte(input))
 	return &dc
 }
@@ -237,4 +251,41 @@ func helloWorldDynamicContent() *DynamicContent {
 
 func helloHelpDynamicContent() *DynamicContent {
 	return generateDynamicContent(`{ "hello":"help" }`)
+}
+
+func complexDynamicContent() *DynamicContent {
+	return generateDynamicContent(`
+	{
+		"glossary": {
+				"title": "example glossary",
+		"GlossDiv": {
+						"title": "S",
+			"GlossList": {
+								"GlossEntry": {
+										"ID": "SGML",
+					"SortAs": "SGML",
+					"GlossTerm": "Standard Generalized Markup Language",
+					"Acronym": "SGML",
+					"Abbrev": "ISO 8879:1986",
+					"GlossDef": {
+												"para": "A meta-markup language, used to create markup languages such as DocBook.",
+						"GlossSeeAlso": ["GML", "XML"]
+										},
+					"GlossSee": "markup"
+								}
+						}
+				}
+		}
+}
+	`)
+}
+
+// setUp is run before tests
+func setUp(t *testing.T) {
+	fmt.Printf(">>> Starting: %v\n", t.Name())
+}
+
+// tearDown is run before tests
+func tearDown(t *testing.T) {
+	fmt.Printf(">>> Finished: %v\n", t.Name())
 }

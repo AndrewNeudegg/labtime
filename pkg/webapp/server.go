@@ -34,8 +34,8 @@ func (dc *DynamicContent) fromJSON(data []byte) error {
 	return json.Unmarshal(data, &dc)
 }
 
-// routeHandler allows each route to supply the required method for serving its own content.
-func (we *WebApp) routeHandler(wr http.ResponseWriter, re *http.Request) {
+// ServeHTTP allows each route to supply the required method for serving its own content.
+func (we *WebApp) ServeHTTP(wr http.ResponseWriter, re *http.Request) {
 	if val, ok := we.Routes[re.URL.Path]; ok {
 		jsonAsBytes, err := val.Content.toJSON()
 		if err != nil {
@@ -43,9 +43,10 @@ func (we *WebApp) routeHandler(wr http.ResponseWriter, re *http.Request) {
 			panic(err)
 		}
 		fmt.Fprintf(wr, string(jsonAsBytes))
+	} else {
+		// TODO: Handle response codes properly, instead of just panicking.
+		panic(fmt.Errorf("route not found"))
 	}
-	// TODO: Handle response codes properly, instead of just panicking.
-	panic(fmt.Errorf("route not found"))
 }
 
 // Launch will start a web app.
@@ -53,8 +54,11 @@ func (we *WebApp) Launch() error {
 	if we.server != nil {
 		return fmt.Errorf("the server cannot be started multiple times")
 	}
-	we.server = &http.Server{Addr: buildAddress(we.Hostname, we.Port)}
-	http.HandleFunc("/", we.routeHandler)
+	we.server = &http.Server{
+		Addr:    buildAddress(we.Hostname, we.Port),
+		Handler: we,
+	}
+	// http.HandleFunc("/", we.routeHandler)
 	return we.server.ListenAndServe()
 }
 
