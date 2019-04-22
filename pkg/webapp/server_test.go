@@ -17,8 +17,8 @@ func Test_ServerBasic(t *testing.T) {
 		Hostname: "localhost",
 		Port:     getFreePort(t),
 		Routes: map[string]Route{
-			"/":     Route{Content: "Hello Home"},
-			"/help": Route{Content: "Hello Help"},
+			"/":     Route{Content: *helloWorldDynamicContent()},
+			"/help": Route{Content: *helloHelpDynamicContent()},
 		},
 	}
 
@@ -40,7 +40,11 @@ func Test_ServerBasic(t *testing.T) {
 			t.Fatalf(err.Error())
 		}
 		fmt.Printf("Testing that %s == %s\n", string(body), route.Content)
-		assert.Assert(t, string(body) == route.Content)
+		jsonBytes, err := route.Content.toJSON()
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+		assert.Assert(t, string(body) == string(jsonBytes))
 	}
 }
 
@@ -56,59 +60,8 @@ func Test_SaveNLoadServer(t *testing.T) {
 		Port:     getFreePort(t),
 		Routes: map[string]Route{
 			// Following JSON from: https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON.
-			"/": Route{Content: `{
-				"squadName": "Super hero squad",
-				"homeTown": "Metro City",
-				"formed": 2016,
-				"secretBase": "Super tower",
-				"active": true,
-				"members": [
-				  {
-					"name": "Molecule Man",
-					"age": 29,
-					"secretIdentity": "Dan Jukes",
-					"powers": [
-					  "Radiation resistance",
-					  "Turning tiny",
-					  "Radiation blast"
-					]
-				  },
-				  {
-					"name": "Madame Uppercut",
-					"age": 39,
-					"secretIdentity": "Jane Wilson",
-					"powers": [
-					  "Million tonne punch",
-					  "Damage resistance",
-					  "Superhuman reflexes"
-					]
-				  },
-				  {
-					"name": "Eternal Flame",
-					"age": 1000000,
-					"secretIdentity": "Unknown",
-					"powers": [
-					  "Immortality",
-					  "Heat Immunity",
-					  "Inferno",
-					  "Teleportation",
-					  "Interdimensional travel"
-					]
-				  }
-				]
-			  }`},
-			// Following JSON from: https://json.org/example.html.
-			"/help": Route{Content: `{"menu": {
-				"id": "file",
-				"value": "File",
-				"popup": {
-				  "menuitem": [
-					{"value": "New", "onclick": "CreateNewDoc()"},
-					{"value": "Open", "onclick": "OpenDoc()"},
-					{"value": "Close", "onclick": "CloseDoc()"}
-				  ]
-				}
-			  }}`},
+			"/":     Route{Content: *helloWorldDynamicContent()},
+			"/help": Route{Content: *helloHelpDynamicContent()},
 		},
 	}
 	// Write out the webapp1 to a file.
@@ -135,7 +88,11 @@ func Test_SaveNLoadServer(t *testing.T) {
 			t.Fatalf(err.Error())
 		}
 		fmt.Printf("Testing that %s == %s\n", string(body), route.Content)
-		assert.Assert(t, string(body) == route.Content)
+		jsonBytes, err := route.Content.toJSON()
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+		assert.Assert(t, string(body) == string(jsonBytes))
 	}
 }
 
@@ -144,8 +101,8 @@ func Test_StartStop(t *testing.T) {
 		Hostname: "localhost",
 		Port:     getFreePort(t),
 		Routes: map[string]Route{
-			"/":     Route{Content: "Hello Home"},
-			"/help": Route{Content: "Hello Help"},
+			"/":     Route{Content: *helloWorldDynamicContent()},
+			"/help": Route{Content: *helloHelpDynamicContent()},
 		},
 	}
 
@@ -167,7 +124,11 @@ func Test_StartStop(t *testing.T) {
 			t.Fatalf(err.Error())
 		}
 		fmt.Printf("Testing that %s == %s\n", string(body), route.Content)
-		assert.Assert(t, string(body) == route.Content)
+		jsonBytes, err := route.Content.toJSON()
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+		assert.Assert(t, string(body) == string(jsonBytes))
 	}
 
 	if err := webApp.Terminate(); err != nil {
@@ -178,6 +139,71 @@ func Test_StartStop(t *testing.T) {
 	if err == nil {
 		t.Fatalf("should have raised a dial error as the server has been terminated")
 	}
+
+}
+
+func Test_DynamicContentBasic(t *testing.T) {
+	// Create some content that we will serialise.
+	content := make(DynamicContent)
+	content["hello"] = "world"
+	// Marshal the content to JSON.
+	contentAsJSONBytes, err := content.toJSON()
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	// Check that the serialised content is as expected.
+	assert.Assert(t, string(contentAsJSONBytes) == `{"hello":"world"}`)
+
+	dupeContent := make(DynamicContent)
+	if err := dupeContent.fromJSON(contentAsJSONBytes); err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	assert.DeepEqual(t, content, dupeContent)
+}
+
+func Test_DynamicContentComplex(t *testing.T) {
+	content := make(DynamicContent)
+	err := content.fromJSON([]byte(`
+	{
+			"glossary": {
+					"title": "example glossary",
+			"GlossDiv": {
+							"title": "S",
+				"GlossList": {
+									"GlossEntry": {
+											"ID": "SGML",
+						"SortAs": "SGML",
+						"GlossTerm": "Standard Generalized Markup Language",
+						"Acronym": "SGML",
+						"Abbrev": "ISO 8879:1986",
+						"GlossDef": {
+													"para": "A meta-markup language, used to create markup languages such as DocBook.",
+							"GlossSeeAlso": ["GML", "XML"]
+											},
+						"GlossSee": "markup"
+									}
+							}
+					}
+			}
+	}
+	`))
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	contentAsJSONBytes, err := content.toJSON()
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	dupeContent := make(DynamicContent)
+	err = dupeContent.fromJSON(contentAsJSONBytes)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	assert.DeepEqual(t, content, dupeContent)
 }
 
 // getFreePort is a helper method for writing tests that may block on a specific port.
@@ -196,4 +222,19 @@ func getTempFile(t *testing.T) *os.File {
 		t.Errorf(err.Error())
 	}
 	return file
+}
+
+// generateDynamicContent will generate simple to use example content.
+func generateDynamicContent(input string) *DynamicContent {
+	dc := DynamicContent{}
+	dc.fromJSON([]byte(input))
+	return &dc
+}
+
+func helloWorldDynamicContent() *DynamicContent {
+	return generateDynamicContent(`{ "hello":"world" }`)
+}
+
+func helloHelpDynamicContent() *DynamicContent {
+	return generateDynamicContent(`{ "hello":"help" }`)
 }

@@ -49,8 +49,8 @@ func launchServer(we *webapp.WebApp) {
 	}()
 }
 
-func terminateServer(we *webapp.WebApp) {
-
+func terminateServer(we *webapp.WebApp) error {
+	return we.Terminate()
 }
 
 func configureServer(we *webapp.WebApp) {

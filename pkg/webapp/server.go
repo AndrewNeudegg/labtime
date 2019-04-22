@@ -2,6 +2,7 @@ package webapp
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -19,12 +20,32 @@ type WebApp struct {
 
 // Route specifies a URL Path and content that this web application will expose.
 type Route struct {
-	Content string `json:"content,omitempty"` // Content specifies the content that will live on this URL.
+	Content DynamicContent `json:"content,omitempty"` // Content specifies the content that will live on this URL.
+}
+
+// DynamicContent is a special type that represents nested JSON.
+type DynamicContent map[string]interface{}
+
+func (dc *DynamicContent) toJSON() ([]byte, error) {
+	return json.Marshal(dc)
+}
+
+func (dc *DynamicContent) fromJSON(data []byte) error {
+	return json.Unmarshal(data, &dc)
 }
 
 // routeHandler allows each route to supply the required method for serving its own content.
 func (we *WebApp) routeHandler(wr http.ResponseWriter, re *http.Request) {
-	fmt.Fprintf(wr, we.Routes[re.URL.Path].Content)
+	if val, ok := we.Routes[re.URL.Path]; ok {
+		jsonAsBytes, err := val.Content.toJSON()
+		if err != nil {
+			// TODO: Handle response codes properly, instead of just panicking.
+			panic(err)
+		}
+		fmt.Fprintf(wr, string(jsonAsBytes))
+	}
+	// TODO: Handle response codes properly, instead of just panicking.
+	panic(fmt.Errorf("route not found"))
 }
 
 // Launch will start a web app.

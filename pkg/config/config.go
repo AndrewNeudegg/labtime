@@ -37,7 +37,7 @@ func Default() Configuration {
 			Project:     "collection/project",
 		},
 		QueryConfig: QueryConfiguration{
-			TimeEntryDetectionRegex: `/time spent/g`,
+			TimeEntryDetectionRegex:  `/time spent/g`,
 			TimeEntryExtractionRegex: `(?P<month>[0-9]+)(mo)|(?P<week>[0-9]+)(w)|(?P<day>[0-9]+)(d)|(?P<hour>[0-9]+)(h)|(?P<minute>[0-9]+)(m)|(?P<second>[0-9]+)(s)`,
 		},
 	}
